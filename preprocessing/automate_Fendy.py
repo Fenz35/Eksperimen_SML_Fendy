@@ -32,10 +32,12 @@ def run_automation():
     
         # Menyimpan Hasilnya
         combined_df = pd.DataFrame(X_train, columns=feature_names)
-        combined_df['grades'] = y_train.reset_index(drop=True)
+        combined_df['grades'] = y_train.values
         combined_df.to_csv(processed_file, index=False)
         
         print(f"Data yang telah diproses disimpan ke: {processed_file}")
+        print(f"Preprocessor pipeline disimpan ke: {save_model_path}")
+        print(f"Nama kolom disimpan ke: {header_path}")
     
     except Exception as e:
         print(f"Error during preprocessing: {str(e)}")

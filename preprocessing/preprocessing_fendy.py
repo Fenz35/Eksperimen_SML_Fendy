@@ -62,6 +62,8 @@ def preprocess_data(data, target_column, save_path, header_path):
         X, y, test_size=0.2, random_state=42
     )
 
+    global_train_mask = pd.Series(True, index=X_train.index)
+
     # Menghapus Outlier berdasarkan IQR
     for feature in numeric_features:
         Q1 = X_train[feature].quantile(0.25)
@@ -69,14 +71,11 @@ def preprocess_data(data, target_column, save_path, header_path):
         IQR = Q3 - Q1
         lower = Q1 - 1.5 * IQR
         upper = Q3 + 1.5 * IQR
+        global_train_mask &= X_train[feature].between(lower, upper)
 
-        train_mask = X_train[feature].between(lower, upper)
-        test_mask = X_test[feature].between(lower, upper)
 
-        X_train = X_train[train_mask]
-        y_train = y_train[train_mask]
-        X_test = X_test[test_mask]
-        y_test = y_test[test_mask]
+    X_train = X_train[global_train_mask]
+    y_train = y_train[global_train_mask]
 
     # Fitting dan transformasi data pada training set
     X_train_transformed = preprocessor.fit_transform(X_train)
